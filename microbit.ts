@@ -1,6 +1,6 @@
 const CALIBRATE_MPH = 5;
-const ledPin = DigitalPin.P13;
-const sensorPin = DigitalPin.P8;
+const LED_PIN = DigitalPin.P13;
+const SENSOR_PIN = DigitalPin.P8;
 
 class SensorEventHandler {
     lastTimestamp: number;
@@ -47,8 +47,8 @@ class SensorEventHandler {
 
 const sensorEventHandler = new SensorEventHandler();
 
-pins.setPull(sensorPin, PinPullMode.PullUp)
-pins.setEvents(sensorPin, PinEventType.Edge)
+pins.setPull(SENSOR_PIN, PinPullMode.PullUp)
+pins.setEvents(SENSOR_PIN, PinEventType.Edge)
 
 input.onButtonPressed(Button.B, () => sensorEventHandler.calibrate())
 control.onEvent(
@@ -61,13 +61,13 @@ control.onEvent(
 // debug code for indicator LED during testing
 let latched = false
 basic.forever(function () {
-    if (pins.digitalReadPin(sensorPin) == 0) {
-        pins.digitalWritePin(ledPin, 1)
+    if (pins.digitalReadPin(SENSOR_PIN) == 0) {
+        pins.digitalWritePin(LED_PIN, 1)
         if (!(latched)) {
             latched = true
         }
     } else {
-        pins.digitalWritePin(ledPin, 0);
+        pins.digitalWritePin(LED_PIN, 0);
         latched = false
     }
 })
