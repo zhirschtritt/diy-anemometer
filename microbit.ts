@@ -5,12 +5,12 @@ const SENSOR_PIN = DigitalPin.P8;
 class SensorEventHandler {
     lastTimestamp: number;
     rpm: number;
-    calibratedRpm: number;
+    mphCoefficient: number;
 
     constructor() {
         this.lastTimestamp = 0;
         this.rpm = 0;
-        this.calibratedRpm = 0;
+        this.mphCoefficient = 0;
     }
 
     recordSensorEvent() {
@@ -32,15 +32,15 @@ class SensorEventHandler {
     }
 
     calibrate() {
-        this.calibratedRpm = CALIBRATE_MPH / this.rpm;
-        serial.writeLine(`Calibrated to ${this.calibratedRpm}`);
+        this.mphCoefficient = CALIBRATE_MPH / this.rpm;
+        serial.writeLine(`Calibrated to ${this.mphCoefficient}`);
     }
 
-    getMph(rpm: number) {
-        return this.calibratedRpm * rpm;
+    private getMph(rpm: number) {
+        return this.mphCoefficient * rpm;
     }
 
-    getRpm(period: number) {
+    private getRpm(period: number) {
         return 60 / period;
     }
 }
