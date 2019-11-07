@@ -2,11 +2,6 @@ const CALIBRATE_MPH = 5;
 const ledPin = DigitalPin.P13;
 const sensorPin = DigitalPin.P8;
 
-pins.setPull(sensorPin, PinPullMode.PullUp)
-pins.setEvents(sensorPin, PinEventType.Edge)
-
-const getRpm = (period: number) => 60 / period;
-
 class SensorEventHandler {
     lastTimestamp: number;
     rpm: number;
@@ -22,7 +17,7 @@ class SensorEventHandler {
         const newTimestamp = control.eventTimestamp()
         // convert from microseconds to seconds
         const period = (newTimestamp - this.lastTimestamp) / 1000000
-        const rpm = Math.trunc(Math.round(60 / period));
+        const rpm = Math.trunc(Math.round(this.getRpm(period)));
 
         const serializedPeriod = period.toString().slice(0, 5);
         const serializedMph = Math.roundWithPrecision(this.getMph(rpm), 3).toString().slice(0, 5);
@@ -44,11 +39,18 @@ class SensorEventHandler {
     getMph(rpm: number) {
         return this.calibratedRpm * rpm;
     }
+
+    getRpm(period: number) {
+        return 60 / period;
+    }
 }
 
 const sensorEventHandler = new SensorEventHandler();
-input.onButtonPressed(Button.B, () => sensorEventHandler.calibrate())
 
+pins.setPull(sensorPin, PinPullMode.PullUp)
+pins.setEvents(sensorPin, PinEventType.Edge)
+
+input.onButtonPressed(Button.B, () => sensorEventHandler.calibrate())
 control.onEvent(
     control.eventSourceId(EventBusSource.MICROBIT_ID_IO_P8),
     control.eventValueId(EventBusValue.MICROBIT_PIN_EVT_FALL),
